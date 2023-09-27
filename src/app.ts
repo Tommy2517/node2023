@@ -1,28 +1,28 @@
 import express, { Request, Response } from "express";
+import * as mongoose from "mongoose";
 
+import { configs } from "./configs/config";
 import * as fsService from "./fsService";
+import { User } from "./models/User.model";
+import { IUser } from "./types/user.type";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/users", async (req: Request, res: Response) => {
-  const users = await fsService.reader();
-  res.json(users);
-});
+app.get(
+  "/users",
+  async (req: Request, res: Response): Promise<Response<IUser[]>> => {
+    const users = await User.find();
+    return res.json(users);
+  },
+);
 
 app.post("/users", async (req: Request, res: Response) => {
   try {
-    const { name, email } = req.body;
-
-    const users = await fsService.reader();
-
-    const lastId = users[users.length - 1].id;
-    const newUser = { name, email, id: lastId + 1 };
-    users.push(newUser);
-    await fsService.writer(users);
-    await res.status(201).json(newUser);
+    const createUser = await User.create({ ...req.body });
+    await res.status(201).json(createUser);
   } catch (e) {
     await res.status(400).json(e.message);
   }
@@ -32,7 +32,7 @@ app.get("/users/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const users = await fsService.reader();
-    const user = users.find((user: any) => user.id === Number(id));
+    const user = users.find((user: IUser) => user.id === Number(id));
     if (!user) {
       throw new Error("User not found");
     }
@@ -47,7 +47,7 @@ app.delete("/users/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const users = await fsService.reader();
-    const index = users.findIndex((user: any) => user.id === Number(id));
+    const index = users.findIndex((user: IUser) => user.id === Number(id));
     if (index === -1) {
       throw new Error("User not found");
     }
@@ -74,7 +74,7 @@ app.put("/users/:id", async (req: Request, res: Response) => {
     }
 
     const users = await fsService.reader();
-    const user = users.find((user: any) => user.id === Number(id));
+    const user = users.find((user: IUser) => user.id === Number(id));
     if (!user) {
       throw new Error("User not found");
     }
@@ -92,8 +92,11 @@ app.put("/users/:id", async (req: Request, res: Response) => {
 
 const PORT = 5001;
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await mongoose.connect(configs.DB_URI);
   console.log(`Server has successfully started on PORT ${PORT}`);
 });
 
 // CRUD c - create, r - read, u - update, d - delete
+
+//FbRCI4ppndbNiyUO
