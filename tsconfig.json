@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig to read more about this file */
+    /* Language and Environment */
+    "target": "ES2021",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+
+    /* Modules */
+    //настраиваем в каком виде будет скомпелирован наш js файл
+    "module": "commonjs",                                /* Specify what module code is generated. */
+    "moduleResolution": "node",                          /* Specify how TypeScript looks up a file from a given module specifier. */
+
+    //roodDir - указываем из какой папки будем читать TS файл
+    //outDir - указываем в какую папку будут попадать скомпилированные js файлы
+    "rootDir": "./src",                                  /* Specify the root folder within your source files. */
+    "outDir": "./dist",                                  /* Specify the root folder within your source files. */
+
+    //позволяет использовать import/export вместо require .module
+    "allowSyntheticDefaultImports": true,                /* Allow 'import x from y' when a module doesn't have a default export. */
+    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
+
+      // при компиляции TypeScript-кода комментарии будут удалены из генерируемых JavaScript-файлов.
+     "removeComments": true,                           /* Disable emitting comments. */
+
+    //требует указывать типы для всех переменных и функций
+     "noImplicitAny": true,                            /* Enable error reporting for expressions and declarations with an implied 'any' type. */
+
+    //предупреждает о неиспульзуемых переменных. что бы не занимать память
+     "noUnusedLocals": true,                           /* Enable error reporting when local variables aren't read. */
+//      "noUnusedParameters": true,
+    //при компиляции создаются файлы в которых проверяются типы всех файлов и если установлены сторонние типы могут возникнуть конфликты и ошибки
+    "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
+  }
+}
