@@ -62,13 +62,11 @@ app.delete('/users/:id', async (req, res) => {
 })
 
 //запрос на удаление
-app.get('/users/del/:id', (req, res) => {
+app.get('/users/del/:id', async (req, res) => {
     const {id} = req.params
     const {name} = req.body
-    fetch(`http://localhost:5001/users/${id}`, {method: 'DELETE'})
-        .then(users => users.json())
-        .then(q => console.log(q))
-    res.json(`user - ${name} - has been deleted`)
+    await fetch(`http://localhost:5001/users/${id}`, {method: 'DELETE'})
+    res.json(`user with id - ${id} - has been deleted`)
 })
 
 app.get('/users/reset/all', async (req, res) => {
