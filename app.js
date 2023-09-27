@@ -1,85 +1,90 @@
 const path = require("node:path");
-const fs = require("fs");
-
-// fs.writeFile(path.resolve('file1.txt'),'',(err)=>{})
-// fs.mkdir(path.resolve('database'),()=>{})
-
 const express = require('express');
-const e = require("express");
+
+const fsService = require('./fsService')
+const userService = require('./user.service')
+
 const app = express();
 const PORT = 5001
+
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+
+app.post('/users', async (req, res) => {
+    try {
+        await userService.userCreate(req, res)
+    } catch (err) {
+        res.status(400).json(err.message)
+    }
+})
+
+app.get('/users', async (req, res) => {
+    await userService.usersRead(req, res)
+})
+
+app.get('/users/:id', async (req, res) => {
+    try {
+        const {id} = req.params
+        if (isNaN(id)) {
+            throw new Error('Invalid ID')
+        }
+        await userService.userRead(req, res);
+    } catch (e) {
+        res.status(404).json(e.message)
+    }
+})
+
+app.put('/users/:id', async (req, res) => {
+    try {
+        const {id} = req.params
+        if (isNaN(id)) {
+            throw new Error('Invalid ID')
+        }
+        await userService.userUpdate(req,res)
+    }catch (e) {
+        res.status(400).json(e)
+    }
+})
+
+app.delete('/users/:id', async (req, res) => {
+    try {
+        const {id} = req.params
+
+        if (isNaN(id)) {
+            throw new Error('Invalid ID')
+        }
+            await userService.userDelete(req, res)
+    } catch (e) {
+        res.status(400).json(e.message)
+
+    }
+})
+
+//запрос на удаление
+app.get('/users/del/:id', (req, res) => {
+    const {id} = req.params
+    const {name} = req.body
+    fetch(`http://localhost:5001/users/${id}`, {method: 'DELETE'})
+        .then(users => users.json())
+        .then(q => console.log(q))
+    res.json(`user - ${name} - has been deleted`)
+})
+
+app.get('/users/reset/all', async (req, res) => {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/users');
+        const users = await response.json();
+
+        const usersArr = users.map(user => ({ id: user.id, name: user.name, email: user.email }));
+        await fsService.writeDB(usersArr);
+
+        res.json({ message: 'Data reset successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 app.listen(PORT, () => {
     console.log('SERVER STARTS')
 })
-
-fetch('https://jsonplaceholder.typicode.com/users')
-    .then(value => value.json())
-    .then(users => {
-        fs.writeFile(path.resolve('database','db.json'),JSON.stringify(users),'utf8',(err)=>{
-            if(err){
-            console.log(err)
-            }
-        })
-        console.log(users)
-    })
-
-// const func = async () => {
-//
-//     let users = [];
-//     await fs.readFile(path.resolve('database', 'db.json'), (err, data) => {
-//         users = JSON.parse(data.toString())
-//     })
-//
-//     app.get('/users', (req, res) => {
-//         res.json(users)
-//     })
-//
-//     app.get('/users/:id', (req, res) => {
-//         let {id} = req.params
-//         for (const user of users) {
-//             if (+user.id === +id){
-//                 res.json(user)
-//             }
-//         }
-//     })
-//
-//     app.post('/users',async (req,res)=>{
-//         try{
-//             let user = await req.body;
-//             users.push(user);
-//             fs.writeFile(path.resolve('database', 'db.json'), JSON.stringify(users), 'utf8', (err) => {
-//                 if (err){
-//                     res.json('have problem')
-//                 }
-//             })
-//             res.json('OK')
-//         }catch (err){
-//                 res.json('have problem')
-//         }
-//     })
-//
-//     app.delete('/users/:id', async(req, res)=>{
-//         let {id} = req.params
-//         let newArray = []
-//         for (const user of users) {
-//             if (+user.id !== +id){
-//                 newArray.push(user);
-//             }
-//         }
-//         users = newArray
-//         fs.writeFile(path.resolve('database', 'db.json'), JSON.stringify(users), 'utf8', (err) => {
-//             if (err){
-//                 res.json('have problem')
-//             }
-//         })
-//         res.json('user has deleted')
-//     })
-//
-//     fetch('http://localhost:5001/users/8',{method:'DELETE'})
-//         .then(users=>users.json())
-//         .then(q => console.log(q))
-// }
-// func().then()
