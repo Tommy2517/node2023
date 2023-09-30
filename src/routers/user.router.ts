@@ -4,7 +4,7 @@ import { userController } from "../controllers/user.controller";
 import { ApiError } from "../errors/api.error";
 import { userMiddleware } from "../middlewares/user.middleware";
 import { User } from "../models/User.model";
-import { commonMiddleware } from "../repositories/common.middleware";
+import { commonMiddleware } from "../middlewares/common.middleware";
 import { UserValidator } from "../validators/user.validator";
 
 const router = Router();
