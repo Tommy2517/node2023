@@ -39,6 +39,32 @@ class UserController {
       next(e);
     }
   }
+
+  public async delete(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      await userService.delete(req.params.userId);
+      res.status(201).json("user deleted");
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async update(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const user = await userService.update(req.params.userId, req.body);
+      res.status(201).json(user);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export const userController = new UserController();

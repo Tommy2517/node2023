@@ -23,5 +23,12 @@ class UserService {
       throw new ApiError("Email already exist", 409);
     }
   }
+  public async delete(userId: string): Promise<void> {
+    return await userRepository.delete(userId);
+  }
+
+  public async update(userId: string, dto: Partial<IUser>): Promise<IUser> {
+    return await userRepository.update(userId, dto);
+  }
 }
 export const userService = new UserService();
