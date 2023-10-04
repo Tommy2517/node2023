@@ -35,23 +35,3 @@ router.delete(
 );
 
 export const userRouter = router;
-// async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { id } = req.params;
-//     const { error, value } = UserValidator.update.validate(req.body);
-//
-//     if (error) {
-//       throw new ApiError(error.message, 400);
-//     }
-//     const user = await User.findByIdAndUpdate(id, value, {
-//       returnDocument: "after",
-//     });
-//     if (!user) {
-//       throw new ApiError("User not found", 404);
-//     }
-//
-//     res.status(201).json(user);
-//   } catch (e) {
-//     next(e);
-//   }
-// }

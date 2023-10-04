@@ -9,7 +9,6 @@ class CommonMiddleware {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
         const id = req.params[field];
-
         if (!mongoose.isObjectIdOrHexString(id)) {
           throw new ApiError("Invalid id", 400);
         }
