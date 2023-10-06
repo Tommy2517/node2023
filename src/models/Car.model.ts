@@ -1,5 +1,8 @@
 import { model, Schema } from "mongoose";
 
+import { EProducer } from "../enums/car.producer.enum";
+import {ICar} from "../types/car.type";
+
 const carSchema = new Schema(
   {
     brand: {
@@ -18,9 +21,14 @@ const carSchema = new Schema(
       type: Number,
       require: true,
     },
+    producer: {
+      type: String,
+      enum: EProducer,
+      require: true,
+    },
   },
   {
     timestamps: true,
   },
 );
-export const Car = model("car", carSchema);
+export const Car = model<ICar>("car", carSchema);

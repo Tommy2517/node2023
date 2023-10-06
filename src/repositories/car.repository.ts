@@ -15,12 +15,13 @@ class CarRepository {
     return await Car.findById(id);
   }
 
-  public async create(dto: ICar): Promise<any> {
+  public async create(dto: ICar): Promise<ICar> {
     return await Car.create(dto);
   }
 
-  public async delete(carId: string): Promise<any> {
-    return await Car.deleteOne({ _id: carId });
+  public async delete(carId: string): Promise<void> {
+    await Car.deleteOne({ _id: carId });
+
   }
   public async update(carId: string, dto: Partial<ICar>): Promise<ICar> {
     return await Car.findByIdAndUpdate(carId, dto, {
