@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 
 import { EGenders } from "../enums/gender.enum";
-import { IUser } from "../types/user.type";
+// import { IUser } from "../types/user.type";
 
 const userSchema = new Schema(
   {
@@ -35,4 +35,5 @@ const userSchema = new Schema(
   },
 );
 
-export const User = model<IUser>("user", userSchema);
+export const User = model("user", userSchema);
+// export const User = model<IUser>("user", userSchema);

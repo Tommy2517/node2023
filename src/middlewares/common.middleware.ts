@@ -3,6 +3,7 @@ import { ObjectSchema } from "joi";
 import mongoose from "mongoose";
 
 import { ApiError } from "../errors/api.error";
+import { userRepository } from "../repositories/user.repository";
 
 class CommonMiddleware {
   public isIdValid(field: string) {
@@ -18,6 +19,7 @@ class CommonMiddleware {
       }
     };
   }
+
   public isBodyValid(validator: ObjectSchema) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -26,13 +28,24 @@ class CommonMiddleware {
         if (error) {
           throw new ApiError(error.message, 400);
         }
-
         req.body = value;
         next();
       } catch (e) {
         next(e);
       }
     };
+  }
+  public async isEmailUniq(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+      const user = await userRepository.getOneByParams({ email });
+      if (user) {
+        throw new ApiError("Email is already exist", 409);
+      }
+      next();
+    } catch (e) {
+      next(e);
+    }
   }
 }
 export const commonMiddleware = new CommonMiddleware();

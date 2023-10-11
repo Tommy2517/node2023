@@ -26,20 +26,6 @@ class UserController {
     }
   }
 
-  public async create(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const user = await userService.create(req.body);
-
-      res.status(201).json(user);
-    } catch (e) {
-      next(e);
-    }
-  }
-
   public async delete(
     req: Request,
     res: Response,

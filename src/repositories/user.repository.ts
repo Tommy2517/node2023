@@ -16,13 +16,12 @@ class UserRepository {
     return await User.findById(id);
   }
 
-  public async create(dto: IUser): Promise<IUser> {
-    return await User.create(dto);
+  public async register(dto: IUserCredentials) {
+    await User.create(dto);
   }
-
-  public async register(dto: IUserCredentials): Promise<IUser> {
-    return await User.create(dto);
-  }
+  // public async register(dto: IUserCredentials): Promise<IUserCredentials> {
+  //   return (await User.create(dto)).toObject() as IUserCredentials;
+  // }
 
   public async delete(userId: string): Promise<any> {
     return await User.deleteOne({ _id: userId });

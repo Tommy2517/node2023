@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { userController } from "../controllers/user.controller";
+import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
 import { userMiddleware } from "../middlewares/user.middleware";
 import { UserValidator } from "../validators/user.validator";
@@ -10,19 +11,15 @@ router.get("", userController.getAll);
 
 router.get(
   "/:userId",
+  authMiddleware.checkAccessToken,
   commonMiddleware.isIdValid("userId"),
   userMiddleware.getByIdOrThrow,
   userController.getById,
 );
 
-router.post(
-  "",
-  commonMiddleware.isBodyValid(UserValidator.create),
-  userController.create,
-);
-
 router.put(
   "/:userId",
+  authMiddleware.checkAccessToken,
   commonMiddleware.isIdValid("userId"),
   commonMiddleware.isBodyValid(UserValidator.update),
   userController.update,
@@ -30,6 +27,7 @@ router.put(
 
 router.delete(
   "/:userId",
+  authMiddleware.checkAccessToken,
   commonMiddleware.isIdValid("userId"),
   userController.delete,
 );
