@@ -40,7 +40,6 @@ class AuthController {
       const refreshToken = req.res.locals.refreshToken as string;
 
       const tokensPair = await authService.refresh(tokenPayload, refreshToken);
-
       return res.status(201).json(tokensPair);
     } catch (e) {
       next(e);

@@ -5,6 +5,7 @@ import * as path from "path";
 import { configs } from "../configs/config";
 import { templates } from "../constants/email.constant";
 import { EEmailAction } from "../enums/email.action.enum";
+import { ITokensActivate } from "../types/activateToken.types";
 
 class EmailService {
   private transporter;
@@ -46,7 +47,7 @@ class EmailService {
   public async sendMail(
     email: string | string[],
     emailAction: EEmailAction,
-    context: Record<string, string | number> = {},
+    context: Record<string, string | number | ITokensActivate> = {},
   ) {
     const { subject, templateName } = templates[emailAction];
 

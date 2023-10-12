@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { ApiError } from "../errors/api.error";
+import { activateTokenRepository } from "../repositories/activateToken.repository";
 import { tokenRepository } from "../repositories/token.repository";
 import { tokenService } from "../services/token.service";
 
@@ -19,11 +20,11 @@ class AuthMiddleware {
 
       const payload = tokenService.checkToken(accessToken, "access");
 
-      const entity = await tokenRepository.findOne({ accessToken });
-
-      if (!entity) {
-        throw new ApiError("Token not valid!", 401);
-      }
+      const entity = await tokenRepository.deleteOne({ accessToken });
+      console.log(entity);
+      // if (!entity) {
+      //   throw new ApiError("Token not valid!", 401);
+      // }
 
       req.res.locals.tokenPayload = payload;
       req.res.locals.accessToken = accessToken;
@@ -59,6 +60,35 @@ class AuthMiddleware {
     } catch (e) {
       next(e);
     }
+  }
+
+  public checkActivateToken(field: string) {
+    return (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const activateToken = req.params[field];
+        if (!activateToken) {
+          throw new ApiError("No Token!", 401);
+        }
+
+        const payload = tokenService.checkActivateToken(
+          activateToken,
+          "activate",
+        );
+        const entity = activateTokenRepository.findOne({
+          activateToken,
+        });
+        console.log(entity);
+        if (!entity) {
+          throw new ApiError("Token not valid!(entity)", 401);
+        }
+
+        req.res.locals.tokenPayload = payload;
+        req.res.locals.refreshToken = activateToken;
+        next();
+      } catch (e) {
+        next(e);
+      }
+    };
   }
 }
 

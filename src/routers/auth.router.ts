@@ -13,6 +13,8 @@ router.post(
   commonMiddleware.isEmailUniq,
   authController.register,
 );
+router.get("/activate/:token", authMiddleware.checkActivateToken("token"));
+
 router.post(
   "/login",
   commonMiddleware.isBodyValid(UserValidator.login),

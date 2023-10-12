@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import { EEmailAction } from "../enums/email.action.enum";
-import { emailService } from "../services/email.service";
 import { userService } from "../services/user.service";
 import { IUser } from "../types/user.type";
 
@@ -12,12 +10,6 @@ class UserController {
     next: NextFunction,
   ): Promise<Response<IUser[]>> {
     try {
-      //TODO - need relocate this email.service V
-      await emailService.sendMail(
-        "2507artem@gmail.com",
-        EEmailAction.REGISTER,
-        { name: "Snow" },
-      );
 
       const users = await userService.getAll();
       return res.json(users);
