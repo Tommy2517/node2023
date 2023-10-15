@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../errors/api.error";
 import { activateTokenRepository } from "../repositories/activateToken.repository";
 import { tokenRepository } from "../repositories/token.repository";
+import { userRepository } from "../repositories/user.repository";
 import { tokenService } from "../services/token.service";
 
 class AuthMiddleware {
@@ -20,11 +21,11 @@ class AuthMiddleware {
 
       const payload = tokenService.checkToken(accessToken, "access");
 
-      const entity = await tokenRepository.deleteOne({ accessToken });
+      const entity = await tokenRepository.findOne({ accessToken });
       console.log(entity);
-      // if (!entity) {
-      //   throw new ApiError("Token not valid!", 401);
-      // }
+      if (!entity) {
+        throw new ApiError("Token not valid!", 401);
+      }
 
       req.res.locals.tokenPayload = payload;
       req.res.locals.accessToken = accessToken;
@@ -63,26 +64,30 @@ class AuthMiddleware {
   }
 
   public checkActivateToken(field: string) {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       try {
         const activateToken = req.params[field];
         if (!activateToken) {
           throw new ApiError("No Token!", 401);
         }
 
-        const payload = tokenService.checkActivateToken(
-          activateToken,
-          "activate",
-        );
-        const entity = activateTokenRepository.findOne({
+        // const payload = tokenService.checkActivateToken(
+        //   activateToken,
+        //   "activate",
+        // );
+        const entity = await activateTokenRepository.findOne({
           activateToken,
         });
-        console.log(entity);
+        const { email } = entity;
+        const user = await userRepository.getOneByParams({ email: email });
+        const newUser = await userRepository.update(user.id, {
+          isActive: true,
+        });
+        console.log(newUser);
         if (!entity) {
           throw new ApiError("Token not valid!(entity)", 401);
         }
-
-        req.res.locals.tokenPayload = payload;
+        // req.res.locals.tokenPayload = payload;
         req.res.locals.refreshToken = activateToken;
         next();
       } catch (e) {

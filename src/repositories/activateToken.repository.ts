@@ -12,7 +12,6 @@ export class ActivateTokenRepository {
   public async findOne(
     params: FilterQuery<ITokensActivate>,
   ): Promise<ITokensActivate> {
-    console.log(params);
     return await ActivateToken.findOne(params);
   }
 
