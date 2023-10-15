@@ -41,6 +41,22 @@ class AuthService {
     }
   }
 
+  public async logout(accessToken: string): Promise<void> {
+    try {
+      await tokenRepository.deleteOne({ accessToken });
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  // public async logoutAll(userId: string): Promise<void> {
+  //   try {
+  //     await tokenRepository.deleteManyByUserId(userId);
+  //   } catch (e) {
+  //     throw new ApiError(e.message, e.status);
+  //   }
+  // }
+
   public async refresh(
     payload: ITokenPayload,
     refreshToken: string,
