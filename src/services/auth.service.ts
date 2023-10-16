@@ -49,13 +49,13 @@ class AuthService {
     }
   }
 
-  // public async logoutAll(userId: string): Promise<void> {
-  //   try {
-  //     await tokenRepository.deleteManyByUserId(userId);
-  //   } catch (e) {
-  //     throw new ApiError(e.message, e.status);
-  //   }
-  // }
+  public async logoutAll(userId: string): Promise<void> {
+    try {
+      await tokenRepository.deleteManyByUserId(userId);
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
 
   public async refresh(
     payload: ITokenPayload,

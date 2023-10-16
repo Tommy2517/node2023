@@ -62,6 +62,22 @@ class AuthController {
       next(e);
     }
   }
+
+  public async logoutAll(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response<void>> {
+    try {
+      const tokenPayload = req.res.locals.tokenPayload as ITokenPayload;
+      console.log(tokenPayload);
+      await authService.logoutAll(tokenPayload.userId as any);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export const authController = new AuthController();
