@@ -1,8 +1,13 @@
+import { EActionTokenType } from "../enums/actionTokenType.enum";
+import { EEmailAction } from "../enums/email.action.enum";
+import { EUserStatus } from "../enums/user-status.enum";
 import { ApiError } from "../errors/api.error";
+import { actionTokenRepository } from "../repositories/action-token.repository";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 import { ITokenPayload, ITokensPair } from "../types/token.types";
 import { IUserCredentials } from "../types/user.type";
+import { emailService } from "./email.service";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 
@@ -72,6 +77,31 @@ class AuthService {
       ]);
 
       return tokensPair;
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async sendActivationToken(tokenPayload: ITokenPayload): Promise<void> {
+    try {
+      const user = await userRepository.findById(tokenPayload.userId as string);
+      if (user.status !== EUserStatus.inactive) {
+        throw new ApiError("User can not be activated", 403);
+      }
+
+      const actionToken = tokenService.generateActionToken({
+        userId: user._id,
+        name: user.name,
+      });
+      await actionTokenRepository.create({
+        token: actionToken,
+        type: EActionTokenType.activate,
+        _userId: user._id,
+      });
+      await emailService.sendMail(user.email, EEmailAction.REGISTER, {
+        name: user.name,
+        actionToken,
+      });
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
