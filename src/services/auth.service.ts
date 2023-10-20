@@ -6,16 +6,32 @@ import { actionTokenRepository } from "../repositories/action-token.repository";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 import { ITokenPayload, ITokensPair } from "../types/token.types";
-import { IUserCredentials } from "../types/user.type";
+import { IUser, IUserCredentials } from "../types/user.type";
 import { emailService } from "./email.service";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 
 class AuthService {
-  public async register(dto: IUserCredentials): Promise<void> {
+  public async register(dto: IUser): Promise<void> {
     try {
       const hashedPassword = await passwordService.hash(dto.password);
-      await userRepository.register({ ...dto, password: hashedPassword });
+      const user = await userRepository.register({
+        ...dto,
+        password: hashedPassword,
+      } as IUser);
+      const actionToken = tokenService.generateActionToken({
+        userId: user._id,
+        name: user.name,
+      });
+      await actionTokenRepository.create({
+        _userId: user._id,
+        type: EActionTokenType.activate,
+        token: actionToken,
+      });
+      await emailService.sendMail(dto.email, EEmailAction.REGISTER, {
+        name: dto.name,
+        actionToken,
+      });
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
@@ -84,7 +100,7 @@ class AuthService {
 
   public async sendActivationToken(tokenPayload: ITokenPayload): Promise<void> {
     try {
-      const user = await userRepository.findById(tokenPayload.userId as string);
+      const user = await userRepository.findById(tokenPayload.userId as any);
       if (user.status !== EUserStatus.inactive) {
         throw new ApiError("User can not be activated", 403);
       }

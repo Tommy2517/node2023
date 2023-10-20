@@ -16,8 +16,9 @@ class UserRepository {
     return await User.findById(id);
   }
 
-  public async register(dto: IUserCredentials) {
-    await User.create(dto);
+  public async register(dto: IUserCredentials): Promise<IUser> {
+    // return await User.create(dto);
+    return (await User.create(dto)).toObject() as IUser;
   }
   // public async register(dto: IUserCredentials): Promise<IUserCredentials> {
   //   return (await User.create(dto)).toObject() as IUserCredentials;
