@@ -70,7 +70,6 @@ class AuthController {
   ): Promise<Response<void>> {
     try {
       const tokenPayload = req.res.locals.tokenPayload as ITokenPayload;
-      console.log(tokenPayload);
       await authService.logoutAll(tokenPayload.userId as any);
 
       return res.sendStatus(204);
@@ -88,6 +87,21 @@ class AuthController {
       const tokenPayload = req.res.locals.tokenPayload as ITokenPayload;
 
       await authService.sendActivationToken(tokenPayload);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+  public async activate(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response<void>> {
+    try {
+      const actionToken = req.query.actionToken as string;
+
+      await authService.activate(actionToken);
 
       return res.sendStatus(204);
     } catch (e) {

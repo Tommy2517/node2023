@@ -1,10 +1,10 @@
 import { Document, Types } from "mongoose";
 
-import { IUser } from "./user.type";
 import { EActionTokenType } from "../enums/actionTokenType.enum";
+import { IUser } from "./user.type";
 
 export interface ITokenPayload {
-  userId: Types.ObjectId;
+  userId: string;
   name: string;
 }
 

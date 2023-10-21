@@ -37,4 +37,6 @@ router.post(
   authController.sendActivationToken,
 );
 
+router.put("/activate", authController.activate);
+
 export const authRouter = router;

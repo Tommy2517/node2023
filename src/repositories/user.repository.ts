@@ -23,14 +23,17 @@ class UserRepository {
   // public async register(dto: IUserCredentials): Promise<IUserCredentials> {
   //   return (await User.create(dto)).toObject() as IUserCredentials;
   // }
-
-  public async delete(userId: string): Promise<any> {
-    return await User.deleteOne({ _id: userId });
+  public async setStatus(userId: string, status: any): Promise<void> {
+    await User.updateOne({ _id: userId }, { $set: { status } });
   }
+
   public async update(userId: string, dto: Partial<IUser>): Promise<IUser> {
     return await User.findByIdAndUpdate(userId, dto, {
       returnDocument: "after",
     });
+  }
+  public async delete(userId: string): Promise<any> {
+    return await User.deleteOne({ _id: userId });
   }
 }
 export const userRepository = new UserRepository();

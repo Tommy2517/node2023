@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 import { EActionTokenType } from "../enums/actionTokenType.enum";
 import { EEmailAction } from "../enums/email.action.enum";
 import { EUserStatus } from "../enums/user-status.enum";
@@ -88,7 +90,10 @@ class AuthService {
         name: payload.name,
       });
       await Promise.all([
-        tokenRepository.create({ ...tokensPair, _userId: payload.userId }),
+        tokenRepository.create({
+          ...tokensPair,
+          _userId: new ObjectId(payload.userId),
+        }),
         tokenRepository.deleteOne({ refreshToken }),
       ]);
 
@@ -118,6 +123,24 @@ class AuthService {
         name: user.name,
         actionToken,
       });
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+  public async activate(token: string): Promise<void> {
+    try {
+      const payload = tokenService.checkActionToken(token);
+      const entity = await actionTokenRepository.findOne({ token });
+      if (!entity) {
+        throw new ApiError("Not valid token", 400);
+      }
+      await Promise.all([
+        actionTokenRepository.deleteManyByUserIdAndType(
+          payload.userId,
+          EActionTokenType.activate,
+        ),
+        userRepository.setStatus(payload.userId, EUserStatus.active),
+      ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
