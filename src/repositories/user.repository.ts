@@ -35,5 +35,13 @@ class UserRepository {
   public async delete(userId: string): Promise<any> {
     return await User.deleteOne({ _id: userId });
   }
+  public async updateOneById(
+    userId: string,
+    dto: Partial<IUser>,
+  ): Promise<IUser> {
+    return await User.findByIdAndUpdate(userId, dto, {
+      returnDocument: "after",
+    });
+  }
 }
 export const userRepository = new UserRepository();

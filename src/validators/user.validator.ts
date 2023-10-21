@@ -28,4 +28,12 @@ export class UserValidator {
     age: this.age,
     genders: this.genders,
   });
+
+  static forgotPassword = joi.object({
+    email: this.email.required(),
+  });
+
+  static setForgotPassword = joi.object({
+    newPassword: this.password.required(),
+  });
 }
