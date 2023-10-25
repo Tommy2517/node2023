@@ -48,7 +48,7 @@ router.post(
   authController.forgotPassword,
 );
 
-router.put(
+router.get(
   "/forgot/:token",
   commonMiddleware.isBodyValid(UserValidator.setForgotPassword),
   authController.setForgotPassword,

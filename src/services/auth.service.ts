@@ -21,10 +21,13 @@ class AuthService {
         ...dto,
         password: hashedPassword,
       } as IUser);
-      const actionToken = tokenService.generateActionToken({
-        userId: user._id,
-        name: user.name,
-      });
+      const actionToken = tokenService.generateActionToken(
+        {
+          userId: user._id,
+          name: user.name,
+        },
+        EActionTokenType.activate,
+      );
       await actionTokenRepository.create({
         _userId: user._id,
         type: EActionTokenType.activate,
@@ -110,10 +113,13 @@ class AuthService {
         throw new ApiError("User can not be activated", 403);
       }
 
-      const actionToken = tokenService.generateActionToken({
-        userId: user._id,
-        name: user.name,
-      });
+      const actionToken = tokenService.generateActionToken(
+        {
+          userId: user._id,
+          name: user.name,
+        },
+        EActionTokenType.activate,
+      );
       await actionTokenRepository.create({
         token: actionToken,
         type: EActionTokenType.activate,
@@ -129,7 +135,10 @@ class AuthService {
   }
   public async activate(token: string): Promise<void> {
     try {
-      const payload = tokenService.checkActionToken(token);
+      const payload = tokenService.checkActionToken(
+        token,
+        EActionTokenType.activate,
+      );
       const entity = await actionTokenRepository.findOne({ token });
       if (!entity) {
         throw new ApiError("Not valid token", 400);

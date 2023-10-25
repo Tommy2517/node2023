@@ -12,7 +12,7 @@ export class ActionTokenRepository {
   public async findOne(
     params: FilterQuery<IActionToken>,
   ): Promise<IActionToken> {
-    return await ActionToken.findOne(params);
+    return await ActionToken.findOne(params).lean();
   }
 
   public async deleteOne(params: FilterQuery<IActionToken>): Promise<void> {
